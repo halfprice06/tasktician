@@ -1,0 +1,12 @@
+<table class="table-fixed w-full">
+    {% for item in items %}
+    <tr class="border-b border-gray-200 bg-gray-100 border-2 border-gray-300">
+        <td class="w-1/12 text-center">
+            <input type="checkbox" id="todo-{{ item.id }}" value="{{ item.id }}">
+        </td>
+        <td class="w-11/12">
+            <label for="todo-{{ item.id }}">{{ item.content }}</label>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
