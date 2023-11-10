@@ -10,6 +10,7 @@ import pickle
 import os
 import openai
 
+
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
@@ -58,12 +59,12 @@ def read_todo_items(request: Request):
 def read_completed_items(request: Request):
     return templates.TemplateResponse("completed.html", {"request": request, "items": completed_items})
 
-@app.post("/todo/", response_model=ToDoItem)
-def create_todo_item(content: str = Form(...)):
+@app.post("/todo/", response_class=HTMLResponse)
+def create_todo_item(request: Request, content: str = Form(...)):
     item = ToDoItem(content=content, id=uuid4())
     todo_items.append(item)
     save_lists()
-    return item
+    return templates.TemplateResponse("single_todo.html", {"request": request, "item": item})
 
 @app.put("/todo/{item_id}/complete", response_model=ToDoItem)
 def complete_todo_item(item_id: UUID):
@@ -116,8 +117,8 @@ def delete_completed_item(item_id: UUID):
 
 @app.post("/autosubtask/", response_model=List[ToDoItem])
 async def autosubtask(content: str = Form(...)):
-    # You need to set your OpenAI API key here
-    openai.api_key = ''
+    # Import OpenAI API key from environment
+    openai.api_key = os.getenv('OPENAI_API_KEY')
 
     # Send the task description to OpenAI's Chat completions endpoint
     response = openai.ChatCompletion.create(

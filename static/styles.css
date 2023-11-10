@@ -1,0 +1,12 @@
+.fixed-footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000; /* This ensures the footer is always on top */
+}
+
+
+body {
+    padding-bottom: 50px; /* Adjust this value according to the height of your footer */
+}
