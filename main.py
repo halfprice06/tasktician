@@ -98,6 +98,10 @@ def get_password_hash(password):
 def verify_password(password: str, hashed_password: str):
     return pwd_context.verify(password, hashed_password)
 
+def validate_email(username):
+    if '@' not in username:
+        return True
+
 
 @app.get("/", response_class=HTMLResponse)
 def login(request: Request):
@@ -180,15 +184,27 @@ def mark_complete(request: Request, item_ids: List[int] = Body(...), db: Session
     return templates.TemplateResponse("todo.html", context)
 
 @app.post("/register", response_class=HTMLResponse)
-def create_user(username: str = Form(...), password: str = Form(...), registration_code: str = Form(...), db: Session = Depends(get_db)):
+def create_user(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), registration_code: str = Form(...), db: Session = Depends(get_db)):
+    # Check if username is a valid email address
+    if validate_email(username) == False:
+        pass
+    else:
+        # email is not valid, return error message
+        return templates.TemplateResponse("registration_failure_invalid_email.html", {"request": request})
+    # Check if username already exists in the database
+    existing_user = get_user(db, username)
+    if existing_user:
+        return templates.TemplateResponse("registration_failure_username_exists.html", {"request": request})
     if registration_code != "getinwearegoingforaride":  # replace with your actual registration code
-        return HTMLResponse('<h1>FAILURE</h1>', status_code=400)
+        return templates.TemplateResponse("registration_failure_wrong_code.html", {"request": request})
+    if password != confirm_password:
+        return templates.TemplateResponse("registration_failure_passwords_no_match.html", {"request": request})
     hashed_password = get_password_hash(password)
     db_user = models.User(username=username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return HTMLResponse('<h1>SUCCESS</h1>', status_code=200)
+    return templates.TemplateResponse("registration_successful.html", {"request": request})
 
 @app.get("/login", response_class=HTMLResponse)
 def load_login_page(request: Request, response: Response):
@@ -204,10 +220,10 @@ def load_login_page(request: Request, response: Response):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login", response_class=HTMLResponse)
-def submit_login_form(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+def submit_login_form(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     db_user = get_user(db, username)
     if db_user is None or not verify_password(password, db_user.hashed_password):
-        return HTMLResponse('<h1>FAILURE</h1>', status_code=400)
+        return templates.TemplateResponse("incorrect_password.html", {"request": request})
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
