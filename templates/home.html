@@ -30,10 +30,21 @@
     </header>
     <div class="container mx-auto p-4 max-w-5xl flex-grow">
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2">
-            <h1 class="text-2xl font-bold mb-6 text-center">👨‍💻 TaskMaster 📝</h1>
+            <h1 class="text-2xl font-bold mb-6 text-center">👨‍💻 Tasktician 💼 </h1>
             <form hx-post="/add/" hx-target="#todo-list" hx-swap="innerHTML" class="mb-4">
                 <div class="flex justify-center items-center mb-4">
-                    <input type="text" name="content" placeholder="Add a new to-do item" class="border p-2 mr-2 w-full">
+                    <div>
+                        <label for="content" class="block text-center font-bold">Task</label>
+                        <input type="text" id="content" name="content" placeholder="Add a new to-do item" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div>
+                        <label for="client" class="block text-center font-bold">Client Name</label>
+                        <input type="text" id="client" name="client" placeholder="Enter client name" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div>
+                        <label for="date" class="block text-center font-bold">Due Date</label>
+                        <input type="date" id="date" name="date" class="border p-2 mr-2 w-full">
+                    </div>
                 </div>
                 <div class="flex justify-center">
                     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

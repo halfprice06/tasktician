@@ -6,6 +6,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import backref
+from sqlalchemy import Date
+
 from database import Base
 from pydantic import BaseModel
 
@@ -43,6 +45,7 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
+
 class ToDo(Base):
     __tablename__ = "todos"
 
@@ -52,10 +55,12 @@ class ToDo(Base):
     completed = Column(Boolean, default=False)
     parent_id = Column(Integer, ForeignKey('todos.id'))
     subtasks = relationship("ToDo", backref=backref('parent', remote_side=[id]))
+    client = Column(String)
+    date = Column(Date)
 
 
-def create_todo(db: Session, content: str, user_id: int, parent_id: int = None):
-    todo = ToDo(content=content, user_id=user_id, parent_id=parent_id)
+def create_todo(db: Session, content: str, user_id: int, client: str, date: Date, parent_id: int = None):
+    todo = ToDo(content=content, user_id=user_id, client=client, date=date, parent_id=parent_id)
     db.add(todo)
     db.commit()
     db.refresh(todo)
@@ -79,8 +84,6 @@ def get_todos(db: Session, user_id: int, skip: int = 0, limit: int = 100):
 
 def get_complete_todos(db: Session, user_id: int, skip: int = 0, limit: int = 100):
     return db.query(ToDo).filter(ToDo.user_id == user_id, ToDo.completed == True).offset(skip).limit(limit).all()
-
-
 
 def delete_todo(db: Session, item_id: int):
     todo = get_todo(db, item_id)

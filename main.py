@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, Response, status, Cookie, Body
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -8,6 +8,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from typing import Optional, List
+from datetime import date
 import logging  # Add this line for logging
 import os
 
@@ -83,6 +84,12 @@ def get_current_user(token: str = Depends(get_token_from_cookie), db: Session = 
         raise credentials_exception
     return user
 
+def get_current_user_or_none(token: str = Depends(get_token_from_cookie), db: Session = Depends(get_db)):
+    try:
+        return get_current_user(token, db)
+    except HTTPException:
+        return None
+
 pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 
 def get_password_hash(password):
@@ -98,7 +105,9 @@ def login(request: Request):
 
 
 @app.get("/home", response_class=HTMLResponse)
-def home(request: Request, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+def home(request: Request, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user_or_none)):
+    if current_user is None:
+        return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     todos = models.get_todos(db, current_user.id)
     context = {
         "request": request,
@@ -110,8 +119,15 @@ def home(request: Request, db: Session = Depends(get_db), current_user: models.U
 
 
 @app.post("/add", response_class=HTMLResponse)
-def add_todo(request: Request, content: str = Form(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    create_todo(db, content=content, user_id=current_user.id)
+def add_todo(request: Request, 
+             content: str = Form(...), 
+             client: str = Form(None),  # Set default value to None
+             date: date = Form(None),  # Set default value to None
+             db: Session = Depends(get_db), 
+             current_user: User = Depends(get_current_user)):
+    client = client if client != "" else None  # If client is an empty string, put null into db
+    date = date if date != "" else None  # If date is an empty string, put null into db
+    create_todo(db, content=content, user_id=current_user.id, client=client, date=date)
     todos = models.get_todos(db, current_user.id)  # Get all todos
     context = {"request": request, "items": todos}  # Change "item" to "items"
     return templates.TemplateResponse("todo.html", context)
@@ -198,10 +214,10 @@ def load_login_page(request: Request, response: Response):
 def submit_login_form(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     db_user = get_user(db, username)
     if db_user is None or not verify_password(password, db_user.hashed_password):
-        raise HTTPException(
+        return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            content={"detail": "Incorrect username or password"},
+            headers={"WWW-Authenticate": "Bearer"}
         )
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -209,8 +225,11 @@ def submit_login_form(username: str = Form(...), password: str = Form(...), db: 
         data={"sub": username}, expires_delta=access_token_expires
     )
     print(f"Access Token: {access_token}")  # Print the access token
-    response = RedirectResponse(url="/home", status_code=status.HTTP_302_FOUND)
+
+    response = Response(status_code=status.HTTP_200_OK)
+    response.headers["HX-Redirect"] = "/home"
     response.set_cookie("access_token", access_token, httponly=True)
+    
     return response
 
 @app.get("/logout")

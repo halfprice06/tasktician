@@ -3,28 +3,28 @@
 <table class="table-fixed w-full">
     <thead>
         <tr>
-            <th class="w-1/12 text-center border-r border-gray-200">
+            <th class="w-1/12 text-center border-4 border-gray-200">
                 <button style="font-size: 0.75em;" title="Select all">✔️</button>
             </th>
-            <th class="w-6/12 text-center border-r border-gray-200">Task</th> <!-- Increased width -->
-            <th class="w-2/12 border-r border-gray-200">Client</th> <!-- Decreased width -->
-            <th class="w-2/12">Due Date</th> <!-- Decreased width -->
+            <th class="w-6/12 text-center border-4 border-gray-200">Task</th> <!-- Increased width -->
+            <th class="w-2/12 border-4 border-gray-200">Client</th> <!-- Decreased width -->
+            <th class="w-2/12 border-4 border-gray-200">Due Date</th> <!-- Decreased width -->
         </tr>
     </thead>
     <tbody>
         {% for item in items %}
-        <tr class="border-b border-gray-200 bg-gray-100 border-2 border-gray-300">
-            <td class="w-1/12 text-center border-r border-gray-200">
+        <tr class="border-b border-gray-200 bg-gray-100 border-4 border-gray-300">
+            <td class="w-1/12 text-center border-4 border-gray-200">
                 <input class="todo-checkbox" type="checkbox" id="todo-{{ item.id }}" value="{{ item.id }}">
             </td>
-            <td class="w-6/12 border-r border-gray-200"> <!-- Increased width -->
+            <td class="w-6/12 border-4 border-gray-200"> <!-- Increased width -->
                 <label for="todo-{{ item.id }}">&nbsp&nbsp&nbsp{{ item.content }}</label>
             </td>
-            <td class="w-2/12 border-r border-gray-200"> <!-- Decreased width -->
-                <!-- Client data will be inserted here -->
+            <td class="w-2/12 text-center border-4 border-gray-200"> <!-- Decreased width -->
+                <label for="client-{{ item.id }}">{{ item.client }}</label> <!-- Client data inserted here -->
             </td>
-            <td class="w-2/12"> <!-- Decreased width -->
-                <!-- Due date data will be inserted here -->
+            <td class="w-2/12 text-center border-4 border-gray-200"> <!-- Decreased width -->
+                <label for="date-{{ item.id }}">{{ item.date }}</label> <!-- Due date data inserted here -->
             </td>
         </tr>
         {% endfor %}
