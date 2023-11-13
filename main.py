@@ -179,23 +179,16 @@ def mark_complete(request: Request, item_ids: List[int] = Body(...), db: Session
     context = {"request": request, "item": todo}
     return templates.TemplateResponse("todo.html", context)
 
-@app.post("/register", response_model=UserOut)
+@app.post("/register", response_class=HTMLResponse)
 def create_user(username: str = Form(...), password: str = Form(...), registration_code: str = Form(...), db: Session = Depends(get_db)):
     if registration_code != "getinwearegoingforaride":  # replace with your actual registration code
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect registration code",
-        )
+        return HTMLResponse('<h1>FAILURE</h1>', status_code=400)
     hashed_password = get_password_hash(password)
     db_user = models.User(username=username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
-
-@app.get("/register", response_class=HTMLResponse)
-def register(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
+    return HTMLResponse('<h1>SUCCESS</h1>', status_code=200)
 
 @app.get("/login", response_class=HTMLResponse)
 def load_login_page(request: Request, response: Response):

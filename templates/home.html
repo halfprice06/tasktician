@@ -11,26 +11,25 @@
     <script src="https://unpkg.com/htmx.org"></script>
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen">
-    <header class="bg-blue-500 text-white p-4">
+    <header class="bg-blue-500 text-white py-2 px-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="/" class="font-bold text-xl">Tasktician</a>
-            <div> Welcome {{ username }}! </div>
+            <a href="/home" class="font-bold text-2xl text-white">
+                <i class="fas fa-tasks pr-2 "></i>Tasktician
+            </a>
+            <div class="font-bold text-xl text-white">  Welcome {{ username }}! </div>
             <nav>
                 <ul class="flex space-x-4 items-center">
-                    <li><button hx-get="/toggle-microphone" hx-swap="innerHTML" hx-trigger="click" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <li><button hx-get="/toggle-microphone" hx-swap="innerHTML" hx-trigger="click" class="text-white hover:text-blue-500 font-bold py-2 px-4 rounded">
                         <i class="fas fa-microphone"></i>
                     </button></li>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/logout">Logout</a></li>
+                    <li><a href="/logout" class="text-white hover:text-blue-500 font-bold py-2 px-4 rounded">Logout</a></li>
                 </ul>
             </nav>
         </div>
     </header>
     <div class="container mx-auto p-4 max-w-5xl flex-grow">
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2">
-            <h1 class="text-2xl font-bold mb-6 text-center">👨‍💻 Tasktician 💼 </h1>
+            <h1 class="text-2xl font-bold mb-6 text-center"><i class="fas fa-tasks pr-2"></i>Add New Tasks</h1>
             <form hx-post="/add/" hx-target="#todo-list" hx-swap="innerHTML" class="mb-4">
                 <div class="flex justify-center items-center mb-4">
                     <div>
@@ -95,13 +94,13 @@
             </div>
         </div>
     </div>
-    <footer class="bg-blue-500 text-white p-4 mt-8 fixed-footer">
+    <footer class="bg-white text-gray-800 p-4">
         <div class="container mx-auto flex justify-between items-center">
             <p>© 2023 Tasktician. All rights reserved.</p>
             <nav>
                 <ul class="flex space-x-4">
-                    <li><a href="/terms">Terms</a></li>
-                    <li><a href="/privacy">Privacy</a></li>
+                    <li><a href="/terms" class="hover:text-blue-500">Terms</a></li>
+                    <li><a href="/privacy" class="hover:text-blue-500">Privacy</a></li>
                 </ul>
             </nav>
         </div>
