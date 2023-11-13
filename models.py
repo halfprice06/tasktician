@@ -66,9 +66,8 @@ def get_todo(db: Session, item_id: int):
     return db.query(ToDo).filter(ToDo.id == item_id).first()
 
 
-def update_todo(db: Session, item_id: int, content: str, completed: bool = False):
+def update_todo(db: Session, item_id: int, completed: bool = False):
     todo = get_todo(db, item_id)
-    todo.content = content
     todo.completed = completed
     db.commit()
     db.refresh(todo)
@@ -76,7 +75,11 @@ def update_todo(db: Session, item_id: int, content: str, completed: bool = False
 
 
 def get_todos(db: Session, user_id: int, skip: int = 0, limit: int = 100):
-    return db.query(ToDo).filter(ToDo.user_id == user_id).offset(skip).limit(limit).all()
+    return db.query(ToDo).filter(ToDo.user_id == user_id, ToDo.completed == False).offset(skip).limit(limit).all()
+
+def get_complete_todos(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(ToDo).filter(ToDo.user_id == user_id, ToDo.completed == True).offset(skip).limit(limit).all()
+
 
 
 def delete_todo(db: Session, item_id: int):

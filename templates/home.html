@@ -7,13 +7,14 @@
     <title>Tasktician</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <script src="https://unpkg.com/htmx.org"></script>
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen">
     <header class="bg-blue-500 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="font-bold text-xl">Tasktician</h1>
+            <a href="/" class="font-bold text-xl">Tasktician</a>
+            <div> Welcome {{ username }} </div>
             <nav>
                 <ul class="flex space-x-4 items-center">
                     <li><button hx-get="/toggle-microphone" hx-swap="innerHTML" hx-trigger="click" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -22,14 +23,15 @@
                     <li><a href="/">Home</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/contact">Contact</a></li>
+                    <li><a href="/logout">Logout</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-    <div class="container mx-auto p-4 max-w-4xl flex-grow">
+    <div class="container mx-auto p-4 max-w-5xl flex-grow">
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2">
             <h1 class="text-2xl font-bold mb-6 text-center">👨‍💻 TaskMaster 📝</h1>
-            <form hx-post="/todo/" hx-target="#todo-list" hx-swap="beforeend" class="mb-4">
+            <form hx-post="/add/" hx-target="#todo-list" hx-swap="innerHTML" class="mb-4">
                 <div class="flex justify-center items-center mb-4">
                     <input type="text" name="content" placeholder="Add a new to-do item" class="border p-2 mr-2 w-full">
                 </div>
@@ -41,14 +43,14 @@
             </form>
         </div>
     </div>
-    <div class="container mx-auto p-4 max-w-4xl flex-grow">
+    <div class="container mx-auto p-4 max-w-5xl flex-grow">
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2">
             <h1 class="text-2xl font-bold mb-6 text-center">In Progress</h1>
 
-            <div id="todo-list" hx-get="/todo/" hx-trigger="load">
+            <div id="todo-list" hx-get="/get_all_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Existing to-do items will be loaded here -->
             </div>
-            <div id="loadingMessage" style="display: none;">Loading...</div>
+            <div id="loadingMessage" style="display: none;"><br>Loading...<br></div>
             <div class="flex justify-center">
 
                 <button id="auto-subtask-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6">
@@ -65,10 +67,10 @@
             </div>
         </div>
     </div>
-    <div class="container mx-auto p-4 max-w-4xl flex-grow">
+    <div class="container mx-auto p-4 max-w-5xl flex-grow">
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2">
             <h1 class="text-2xl font-bold mb-6 text-center">Completed</h1>
-            <form id="completed-list" hx-get="/todo/completed" hx-trigger="load">
+            <form id="completed-list" hx-get="/get_all_complete_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Completed items will be loaded here -->
             </form>
             <div class="flex justify-center">
@@ -84,7 +86,7 @@
     </div>
     <footer class="bg-blue-500 text-white p-4 mt-8 fixed-footer">
         <div class="container mx-auto flex justify-between items-center">
-            <p>© 2022 TaskMaster. All rights reserved.</p>
+            <p>© 2023 Tasktician. All rights reserved.</p>
             <nav>
                 <ul class="flex space-x-4">
                     <li><a href="/terms">Terms</a></li>
@@ -93,5 +95,105 @@
             </nav>
         </div>
     </footer>
+    <script> 
+        document.getElementById('delete-btn').addEventListener('click', function() {
+            // Get all checkboxes
+            let checkboxes = document.querySelectorAll('.todo-checkbox');
+            // Filter out the selected checkboxes
+            let selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+            // Map the selected checkboxes to their values
+            let selectedValues = selectedCheckboxes.map(checkbox => checkbox.value);
+            
+            // Send the selected values to the /delete endpoint
+            fetch('/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(selectedValues),
+            })
+            .then(() => {
+                // Fetch the updated list of todos
+                return fetch('/get_all_todos');
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Replace the old content with the new content
+                document.getElementById('todo-list').innerHTML = html;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+        document.getElementById('mark-complete-btn').addEventListener('click', function() {
+            // Get all checkboxes
+            let checkboxes = document.querySelectorAll('.todo-checkbox');
+            // Filter out the selected checkboxes
+            let selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+            // Map the selected checkboxes to their values
+            let selectedValues = selectedCheckboxes.map(checkbox => checkbox.value);
+            
+            // Send the selected values to the /mark_complete endpoint
+            fetch('/mark_complete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(selectedValues),
+            })
+            .then(() => {
+                // Fetch the updated list of todos
+                return fetch('/get_all_todos');
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Replace the old content with the new content
+                document.getElementById('todo-list').innerHTML = html;
+            })
+            .then(() => {
+                // Fetch the updated list of completed todos
+                return fetch('/get_all_complete_todos');
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Replace the old content with the new content
+                document.getElementById('completed-list').innerHTML = html;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+        document.getElementById('delete-completed-btn').addEventListener('click', function() {
+            // Get all checkboxes
+            let checkboxes = document.querySelectorAll('.todo-checkbox');
+            // Filter out the selected checkboxes
+            let selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+            // Map the selected checkboxes to their values
+            let selectedValues = selectedCheckboxes.map(checkbox => checkbox.value);
+            
+            // Send the selected values to the /delete endpoint
+            fetch('/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(selectedValues),
+            })
+            .then(() => {
+                // Fetch the updated list of todos
+                return fetch('/get_all_complete_todos');
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Replace the old content with the new content
+                document.getElementById('completed-list').innerHTML = html;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+     </script>
 </body>
 </html>
+
+

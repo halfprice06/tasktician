@@ -1,19 +1,22 @@
 from datetime import datetime, timedelta
-from fastapi import Depends, FastAPI, Form, HTTPException, Request, Response, status, Cookie
+from fastapi import Depends, FastAPI, Form, HTTPException, Request, Response, status, Cookie, Body
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
+import logging  # Add this line for logging
+import os
 
 import models  # Add this line
 
 from database import Base, SessionLocal, engine
 from models import create_todo, delete_todo, get_todo, update_todo, User, UserCreate, UserOut
 
-SECRET_KEY = "your-secret-key"
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -23,6 +26,10 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.info('This will get logged to a file')
 
 
 def get_db():
@@ -48,11 +55,12 @@ def get_user(db: Session, username: str):
 def verify_password(password: str, hashed_password: str):
     return CryptContext().verify(password, hashed_password)
 
-def get_token_from_cookie(cookie: Optional[str] = Cookie(None)):
-    print(f"Cookie: {cookie}")  # Print the entire cookie
-    return cookie
+def get_token_from_cookie(access_token: Optional[str] = Cookie(None)):
+    print(f"Cookie: {access_token}")  # Print the entire cookie
+    return access_token
 
 def get_current_user(token: str = Depends(get_token_from_cookie), db: Session = Depends(get_db)):
+    print(f"Token: {token}")  # Print the token   
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -69,7 +77,7 @@ def get_current_user(token: str = Depends(get_token_from_cookie), db: Session = 
     except JWTError as e:
         print(f"JWTError: {e}")  # Log the error message
         raise credentials_exception
-    user = models.get_user(db, username=token_data.username)
+    user = get_user(db, username=token_data.username)  # Corrected line
     print(f"User from database: {user}")  # Print the user from database
     if user is None:
         raise credentials_exception
@@ -83,58 +91,111 @@ def get_password_hash(password):
 def verify_password(password: str, hashed_password: str):
     return pwd_context.verify(password, hashed_password)
 
+
 @app.get("/", response_class=HTMLResponse)
+def login(request: Request):
+    return templates.TemplateResponse("landing.html", {"request": request})
+
+
+@app.get("/home", response_class=HTMLResponse)
 def home(request: Request, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     todos = models.get_todos(db, current_user.id)
     context = {
         "request": request,
         "todos": todos,
-        "title": "Home"
+        "title": "Home",
+        "username": current_user.username
     }
     return templates.TemplateResponse("home.html", context)
 
 
-# In your routes, replace session_key with user_id
 @app.post("/add", response_class=HTMLResponse)
-def post_add(request: Request, content: str = Form(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    todo = create_todo(db, content=content, user_id=current_user.id)
-    context = {"request": request, "todo": todo}
-    return templates.TemplateResponse("todo/item.html", context)
+def add_todo(request: Request, content: str = Form(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    create_todo(db, content=content, user_id=current_user.id)
+    todos = models.get_todos(db, current_user.id)  # Get all todos
+    context = {"request": request, "items": todos}  # Change "item" to "items"
+    return templates.TemplateResponse("todo.html", context)
+
+@app.get("/get_all_todos", response_class=HTMLResponse)
+def get_all_todos(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    todos = models.get_todos(db, current_user.id)
+    print(f"Todos: {todos}")
+    context = {"request": request, "items": todos, "username": current_user.username}
+    print(templates.TemplateResponse("todo.html", context))
+    return templates.TemplateResponse("todo.html", context)
+
+@app.get("/get_all_complete_todos", response_class=HTMLResponse)
+def get_all_complete_todos(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    todos = models.get_complete_todos(db, current_user.id)
+    print(f"Todos: {todos}")
+    context = {"request": request, "items": todos, "username": current_user.username}
+    print(templates.TemplateResponse("todo.html", context))
+    return templates.TemplateResponse("todo.html", context)
 
 
 @app.get("/edit/{item_id}", response_class=HTMLResponse)
 def get_edit(request: Request, item_id: int, db: Session = Depends(get_db)):
     todo = get_todo(db, item_id)
     context = {"request": request, "todo": todo}
-    return templates.TemplateResponse("todo/form.html", context)
+    return templates.TemplateResponse("todo.html", context)
 
 
-@app.put("/edit/{item_id}", response_class=HTMLResponse)
-def put_edit(request: Request, item_id: int, content: str = Form(...), db: Session = Depends(get_db)):
-    todo = update_todo(db, item_id, content)
-    context = {"request": request, "todo": todo}
-    return templates.TemplateResponse("todo/item.html", context)
+# @app.delete("/delete/{item_id}", response_class=HTMLResponse)
+# def delete(request: Request, item_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+#     delete_todo(db, item_id)
+#     todos = models.get_todos(db, current_user.id)  # Get all todos after deletion
+#     context = {"request": request, "items": todos}  # Change "item" to "items"
+#     return templates.TemplateResponse("todo.html", context)
 
 
-@app.delete("/delete/{item_id}", response_class=Response)
-def delete(item_id: int, db: Session = Depends(get_db)):
-    delete_todo(db, item_id)
+@app.delete("/delete", response_class=HTMLResponse)
+def delete(request: Request, item_ids: List[int] = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    for item_id in item_ids:
+        delete_todo(db, item_id)
+    todos = models.get_todos(db, current_user.id)  # Get all todos after deletion
+    context = {"request": request, "items": todos}  # Change "item" to "items"
+    return templates.TemplateResponse("todo.html", context)
+
+@app.post("/mark_complete", response_class=HTMLResponse)
+def mark_complete(request: Request, item_ids: List[int] = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    for item_id in item_ids:
+        todo = update_todo(db, item_id, completed=True)
+    context = {"request": request, "item": todo}
+    return templates.TemplateResponse("todo.html", context)
 
 @app.post("/register", response_model=UserOut)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    hashed_password = get_password_hash(user.password)
-    db_user = models.User(username=user.username, hashed_password=hashed_password)
+def create_user(username: str = Form(...), password: str = Form(...), registration_code: str = Form(...), db: Session = Depends(get_db)):
+    if registration_code != "getinwearegoingforaride":  # replace with your actual registration code
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect registration code",
+        )
+    hashed_password = get_password_hash(password)
+    db_user = models.User(username=username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
+@app.get("/register", response_class=HTMLResponse)
+def register(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
 @app.get("/login", response_class=HTMLResponse)
-def login_form(request: Request):
+def load_login_page(request: Request, response: Response):
+    if "access_token" in request.cookies:
+        access_token = request.cookies.get("access_token")
+        try:
+            payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+            username: str = payload.get("sub")
+            if username is not None:
+                return RedirectResponse(url="/home", status_code=status.HTTP_302_FOUND)
+        except JWTError:
+            pass
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
-def login(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+def submit_login_form(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     db_user = get_user(db, username)
     if db_user is None or not verify_password(password, db_user.hashed_password):
         raise HTTPException(
@@ -142,13 +203,20 @@ def login(username: str = Form(...), password: str = Form(...), db: Session = De
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": username}, expires_delta=access_token_expires
     )
     print(f"Access Token: {access_token}")  # Print the access token
-    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie("access_token", access_token, httponly=True, samesite="None", secure="False")
+    response = RedirectResponse(url="/home", status_code=status.HTTP_302_FOUND)
+    response.set_cookie("access_token", access_token, httponly=True)
+    return response
+
+@app.get("/logout")
+def logout(response: Response):
+    response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    response.delete_cookie("access_token")
     return response
 
 @app.get("/test-token")
