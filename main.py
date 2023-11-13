@@ -203,15 +203,11 @@ def load_login_page(request: Request, response: Response):
             pass
     return templates.TemplateResponse("login.html", {"request": request})
 
-@app.post("/login")
+@app.post("/login", response_class=HTMLResponse)
 def submit_login_form(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     db_user = get_user(db, username)
     if db_user is None or not verify_password(password, db_user.hashed_password):
-        return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"detail": "Incorrect username or password"},
-            headers={"WWW-Authenticate": "Bearer"}
-        )
+        return HTMLResponse('<h1>FAILURE</h1>', status_code=400)
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
