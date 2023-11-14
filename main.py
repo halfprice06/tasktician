@@ -155,15 +155,6 @@ def get_edit(request: Request, item_id: int, db: Session = Depends(get_db)):
     context = {"request": request, "todo": todo}
     return templates.TemplateResponse("todo.html", context)
 
-
-# @app.delete("/delete/{item_id}", response_class=HTMLResponse)
-# def delete(request: Request, item_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-#     delete_todo(db, item_id)
-#     todos = models.get_todos(db, current_user.id)  # Get all todos after deletion
-#     context = {"request": request, "items": todos}  # Change "item" to "items"
-#     return templates.TemplateResponse("todo.html", context)
-
-
 @app.delete("/delete", response_class=HTMLResponse)
 def delete(request: Request, item_ids: List[int] = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     for item_id in item_ids:
@@ -181,12 +172,12 @@ def mark_complete(request: Request, item_ids: List[int] = Body(...), db: Session
 
 @app.post("/register", response_class=HTMLResponse)
 def create_user(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), registration_code: str = Form(...), db: Session = Depends(get_db)):
-    # Check if username is a valid email address
-    if validate_email(username) == False:
-        pass
-    else:
-        # email is not valid, return error message
-        return templates.TemplateResponse("registration_failure_invalid_email.html", {"request": request})
+    # # Check if username is a valid email address
+    # if validate_email(username) == False:
+    #     pass
+    # else:
+    #     # email is not valid, return error message
+    #     return templates.TemplateResponse("registration_failure_invalid_email.html", {"request": request})
     # Check if username already exists in the database
     existing_user = get_user(db, username)
     if existing_user:
