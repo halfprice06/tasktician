@@ -10,17 +10,18 @@
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <script src="https://unpkg.com/htmx.org"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen">
     <header class="bg-blue-500 text-white py-2 px-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="/home" class="font-bold text-2xl text-white">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <a href="/home" class="font-bold text-2xl text-white mb-2 md:mb-0">
                 <i class="fas fa-tasks pr-2 "></i>Tasktician
             </a>
-            <div class="font-bold text-xl text-white">  Welcome {{ username }}! </div>
+            <div class="font-bold text-xl text-white mb-2 md:mb-0">Welcome {{ username }}!</div>
             <nav>
-                <ul class="flex space-x-4 items-center">
+                <ul class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4 items-center">
                     <li><button hx-get="/toggle-microphone" hx-swap="innerHTML" hx-trigger="click" class="text-white hover:text-blue-500 font-bold py-2 px-4 rounded">
                         <i class="fas fa-microphone"></i>
                     </button></li>
@@ -29,9 +30,10 @@
             </nav>
         </div>
     </header>
-    <div class="container mx-auto p-4 max-w-5xl flex-grow">
-        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2">
-            <h1 class="text-2xl font-bold mb-6 text-center"><i class="fas fa-tasks pr-2"></i>Add New Tasks</h1>
+    <button id="toggleButton">Toggle</button>
+    <div id="collapsibleContainer" class="container mx-auto p-4 max-w-5xl flex-grow overflow-x-auto">
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 800px;">
+            <h1 class="text-2xl font-bold mb-6 text-center text-blue-500">Add New Tasks</h1>            
             <form hx-post="/add/" hx-target="#todo-list" hx-swap="innerHTML" class="mb-4">
                 <div class="flex justify-center items-center mb-4">
                     <div>
@@ -55,8 +57,8 @@
             </form>
         </div>
     </div>
-    <div class="container mx-auto p-4 max-w-5xl flex-grow">
-        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2">
+    <div class="container mx-auto p-4 max-w-5xl flex-grow overflow-x-auto">
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 800px;">
             <h1 class="text-2xl font-bold mb-6 text-center">In Progress</h1>
 
             <div id="todo-list" hx-get="/get_all_todos" hx-swap="innerHTML" hx-trigger="load">
@@ -79,12 +81,12 @@
             </div>
         </div>
     </div>
-    <div class="container mx-auto p-4 max-w-5xl flex-grow">
-        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2">
+    <div class="container mx-auto p-4 max-w-5xl flex-grow overflow-x-auto">
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 800px;">
             <h1 class="text-2xl font-bold mb-6 text-center">Completed</h1>
-            <form id="completed-list" hx-get="/get_all_complete_todos" hx-swap="innerHTML" hx-trigger="load">
+            <div id="completed-list" hx-get="/get_all_complete_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Completed items will be loaded here -->
-            </form>
+            </div>
             <div class="flex justify-center">
 
                 <button id="submit-juris-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6">
@@ -204,7 +206,35 @@
                 console.error('Error:', error);
             });
         });
-     </script>
+        
+    </script>
+    <script>
+        $(document).ready(function(){
+          $("#toggleButton").click(function(){
+            $("#collapsibleContainer").slideToggle("fast");
+          });
+        });
+    </script>
+    <script>
+        // Modularize your code
+        function toggleCheckboxes(tableId) {
+            var table = document.getElementById(tableId);
+            var checkboxes = table.getElementsByClassName('todo-checkbox');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = !checkboxes[i].checked;
+            }
+        }
+
+        // Use event delegation
+        document.addEventListener('click', function(e) {
+            if(e.target && e.target.id == 'select-all-completed') {
+                toggleCheckboxes('completed-table');
+            }
+            else if(e.target && e.target.id == 'select-all-todo') {
+                toggleCheckboxes('todo-table');
+            }
+        });
+    </script>
 </body>
 </html>
 

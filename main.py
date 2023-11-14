@@ -134,23 +134,19 @@ def add_todo(request: Request,
     create_todo(db, content=content, user_id=current_user.id, client=client, date=date)
     todos = models.get_todos(db, current_user.id)  # Get all todos
     context = {"request": request, "items": todos}  # Change "item" to "items"
-    return templates.TemplateResponse("todo.html", context)
+    return templates.TemplateResponse("in_progress.html", context)
 
 @app.get("/get_all_todos", response_class=HTMLResponse)
 def get_all_todos(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     todos = models.get_todos(db, current_user.id)
-    print(f"Todos: {todos}")
     context = {"request": request, "items": todos, "username": current_user.username}
-    print(templates.TemplateResponse("todo.html", context))
-    return templates.TemplateResponse("todo.html", context)
+    return templates.TemplateResponse("in_progress.html", context)
 
 @app.get("/get_all_complete_todos", response_class=HTMLResponse)
 def get_all_complete_todos(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     todos = models.get_complete_todos(db, current_user.id)
-    print(f"Todos: {todos}")
     context = {"request": request, "items": todos, "username": current_user.username}
-    print(templates.TemplateResponse("todo.html", context))
-    return templates.TemplateResponse("todo.html", context)
+    return templates.TemplateResponse("completed.html", context)
 
 
 @app.get("/edit/{item_id}", response_class=HTMLResponse)
@@ -174,14 +170,14 @@ def delete(request: Request, item_ids: List[int] = Body(...), db: Session = Depe
         delete_todo(db, item_id)
     todos = models.get_todos(db, current_user.id)  # Get all todos after deletion
     context = {"request": request, "items": todos}  # Change "item" to "items"
-    return templates.TemplateResponse("todo.html", context)
+    return templates.TemplateResponse("in_progress.html", context)
 
 @app.post("/mark_complete", response_class=HTMLResponse)
 def mark_complete(request: Request, item_ids: List[int] = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     for item_id in item_ids:
         todo = update_todo(db, item_id, completed=True)
     context = {"request": request, "item": todo}
-    return templates.TemplateResponse("todo.html", context)
+    return templates.TemplateResponse("completed.html", context)
 
 @app.post("/register", response_class=HTMLResponse)
 def create_user(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), registration_code: str = Form(...), db: Session = Depends(get_db)):

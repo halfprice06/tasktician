@@ -1,10 +1,10 @@
 
 
-<table class="table-fixed w-full">
+<table id="todo-table" class="table-fixed w-full">
     <thead>
         <tr>
             <th class="w-1/12 text-center border-4 border-gray-200">
-                <button style="font-size: 0.75em;" title="Select all">✔️</button>
+                <button id="select-all-todo" style="font-size: 0.75em;" title="Select all">✔️</button>
             </th>
             <th class="w-6/12 text-center border-4 border-gray-200">Task</th> <!-- Increased width -->
             <th class="w-2/12 border-4 border-gray-200">Client</th> <!-- Decreased width -->
@@ -30,3 +30,4 @@
         {% endfor %}
     </tbody>
 </table>
+
