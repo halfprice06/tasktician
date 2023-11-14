@@ -185,12 +185,12 @@ def mark_complete(request: Request, item_ids: List[int] = Body(...), db: Session
 
 @app.post("/register", response_class=HTMLResponse)
 def create_user(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), registration_code: str = Form(...), db: Session = Depends(get_db)):
-    # Check if username is a valid email address
-    if validate_email(username) == False:
-        pass
-    else:
-        # email is not valid, return error message
-        return templates.TemplateResponse("registration_failure_invalid_email.html", {"request": request})
+    # # Check if username is a valid email address
+    # if validate_email(username) == False:
+    #     pass
+    # else:
+    #     # email is not valid, return error message
+    #     return templates.TemplateResponse("registration_failure_invalid_email.html", {"request": request})
     # Check if username already exists in the database
     existing_user = get_user(db, username)
     if existing_user:
