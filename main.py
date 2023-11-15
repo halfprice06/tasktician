@@ -206,6 +206,10 @@ def load_login_page(request: Request, response: Response):
             pass
     return templates.TemplateResponse("login.html", {"request": request})
 
+@app.get("/get_register_box", response_class=HTMLResponse)
+def get_register_box(request: Request, response: Response):
+    return templates.TemplateResponse("register_container.html", {"request": request})
+
 @app.post("/login", response_class=HTMLResponse)
 def submit_login_form(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     db_user = get_user(db, username)

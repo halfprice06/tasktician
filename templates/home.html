@@ -13,8 +13,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 </head>
-<body class="bg-gray-100 flex flex-col min-h-screen">
-    <header class="bg-blue-500 text-white py-2 px-4 shadow-md">
+<body class="bg-gray-100 flex-col min-h-screen">
+    <header class="bg-blue-500 text-white py-2 px-4 mb-4 shadow-md">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <a href="/home" class="font-bold text-2xl text-white mb-2 md:mb-0">
                 <i class="fas fa-tasks pr-2 "></i>Tasktician
@@ -30,8 +30,7 @@
             </nav>
         </div>
     </header>
-    <button id="toggleButton">Toggle</button>
-    <div id="collapsibleContainer" class="container mx-auto p-4 max-w-5xl flex-grow overflow-x-auto">
+    <div id="NewTasksContainer" class="container mx-auto p-2 max-w-6xl flex-grow overflow-x-auto">
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 800px;">
             <h1 class="text-2xl font-bold mb-6 text-center text-blue-500">Add New Tasks</h1>            
             <form hx-post="/add/" hx-target="#todo-list" hx-swap="innerHTML" class="mb-4">
@@ -57,9 +56,9 @@
             </form>
         </div>
     </div>
-    <div class="container mx-auto p-4 max-w-5xl flex-grow overflow-x-auto">
+    <div id="InProgressTasks" class="container mx-auto p-2 max-w-6xl flex-grow overflow-x-auto">
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 800px;">
-            <h1 class="text-2xl font-bold mb-6 text-center">In Progress</h1>
+            <h1 class="text-2xl font-bold mb-6 text-center text-blue-500">In Progress</h1>
 
             <div id="todo-list" hx-get="/get_all_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Existing to-do items will be loaded here -->
@@ -67,21 +66,21 @@
             <div id="loadingMessage" style="display: none;"><br>Loading...<br></div>
             <div class="flex justify-center">
 
-                <button id="auto-subtask-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6">
+                <button id="auto-subtask-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
                     Auto Subtask
                 </button>
                 
-                <button id="mark-complete-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6">
+                <button id="mark-complete-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
                     Mark Complete
                 </button>
 
-                <button id="delete-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6">
+                <button id="delete-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
                     Delete
                 </button>
             </div>
         </div>
     </div>
-    <div class="container mx-auto p-4 max-w-5xl flex-grow overflow-x-auto">
+    <div id="CompletedTasks" class="container mx-auto p-2 max-w-6xl flex-grow overflow-x-auto">
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 800px;">
             <h1 class="text-2xl font-bold mb-6 text-center">Completed</h1>
             <div id="completed-list" hx-get="/get_all_complete_todos" hx-swap="innerHTML" hx-trigger="load">
@@ -89,10 +88,10 @@
             </div>
             <div class="flex justify-center">
 
-                <button id="submit-juris-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6">
+                <button id="submit-juris-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
                     Submit to Juris
                 </button>
-                <button id="delete-completed-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6">
+                <button id="delete-completed-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
                     Delete
                 </button>
             </div>
@@ -210,9 +209,10 @@
     </script>
     <script>
         $(document).ready(function(){
-          $("#toggleButton").click(function(){
-            $("#collapsibleContainer").slideToggle("fast");
-          });
+            $(".toggleButton").click(function(){
+                var target = $(this).data('target');
+                $("#" + target).slideToggle("fast");
+            });
         });
     </script>
     <script>

@@ -15,67 +15,36 @@
             <a href="/home" class="font-bold text-2xl text-white">
                 <i class="fas fa-tasks pr-2 "></i>Tasktician
             </a>
+            <a href="/login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Login</a></li>
+
         </div>
     </header>
-    <div class="container mx-auto p-4 max-w-sm flex-grow flex flex-col justify-center items-center">
-            <div class="w-full max-w-xs mx-auto mt-6">
-                <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
-
-                <form hx-post="/login" hx-redirect="follow" hx-swap="innerHTML">
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-                            Email
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username">
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                            Password
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************" name="password">
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                            Sign In
-                        </button>
-                    </div>
-                </form>
+    <div class="container mx-auto p-4 max-w-5xl flex-grow flex items-center justify-center">
+        <div id="login-box" class="mx-auto mt-6 p-6">
+            <h1 class="text-2xl font-bold mb-2 text-center">Login</h1>
+            <form hx-post="/login" hx-redirect="follow" hx-swap="innerHTML">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+                        Email
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                        Password
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************" name="password">
+                </div>
+                <div class="flex justify-center">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+            <div class="flex justify-center mt-4">
+                <div hx-get="/get_register_box" hx-target="#login-box" hx-swap="innerHTML" hx-trigger="click" class="text-blue-500 hover:text-blue-700">Don't have an account? Click here to register.</div>
             </div>
-            <div class="w-full max-w-xs mx-auto mt-6">
-                <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
-
-                <form action="/register" method="POST" hx-post="/register" hx-swap="innerHTML">
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-                            Email
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username" required>
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                            Password
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="Password" name="password" required>
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="confirm_password">
-                            Confirm Password
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="confirm_password" type="password" placeholder="Password" name="confirm_password" required>
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="registration_code">
-                            Registration Code
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="registration_code" type="text" placeholder="Registration Code" name="registration_code" required>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                            Register
-                        </button>
-                    </div>
-                </form>
-            </div>
+        </div>
     </div>
     <footer class="bg-white text-gray-800 p-4">
         <div class="container mx-auto flex justify-between items-center">
