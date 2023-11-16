@@ -121,17 +121,21 @@ def home(request: Request, db: Session = Depends(get_db), current_user: models.U
     }
     return templates.TemplateResponse("home.html", context)
 
-
 @app.post("/add", response_class=HTMLResponse)
 def add_todo(request: Request, 
-             content: str = Form(...), 
-             client: str = Form(None),  # Set default value to None
-             date: date = Form(None),  # Set default value to None
+             tasks: str = Form(...), 
+             client: str = Form(None), 
+             client_id: int = Form(None),
+             matter_id: int = Form(None),
+             due_date: date = Form(None),
+             date_completed: date = Form(None),
+             time_spent: float = Form(None),
+             completed_bool: bool = Form(None),
+             parent_id: int = Form(None),
              db: Session = Depends(get_db), 
              current_user: User = Depends(get_current_user)):
     client = client if client != "" else None  # If client is an empty string, put null into db
-    date = date if date != "" else None  # If date is an empty string, put null into db
-    create_todo(db, content=content, user_id=current_user.id, client=client, date=date)
+    create_todo(db, tasks=tasks, user_id=current_user.id, client=client, client_id=client_id, matter_id=matter_id, due_date=due_date, date_completed=date_completed, time_spent=time_spent, completed_bool=completed_bool, parent_id=parent_id)
     todos = models.get_todos(db, current_user.id)  # Get all todos
     context = {"request": request, "items": todos}  # Change "item" to "items"
     return templates.TemplateResponse("in_progress.html", context)
@@ -147,6 +151,13 @@ def get_all_complete_todos(request: Request, db: Session = Depends(get_db), curr
     todos = models.get_complete_todos(db, current_user.id)
     context = {"request": request, "items": todos, "username": current_user.username}
     return templates.TemplateResponse("completed.html", context)
+
+@app.post("/search", response_class=HTMLResponse)
+def search(request: Request, query: str = Form(None), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    todos = models.search_todos(db, current_user.id, query)
+    context = {"request": request, "items": todos, "username": current_user.username}
+    print(f"Search results: {todos}")  # Print the search results
+    return templates.TemplateResponse("search_results.html", context)
 
 
 @app.get("/edit/{item_id}", response_class=HTMLResponse)
@@ -164,9 +175,9 @@ def delete(request: Request, item_ids: List[int] = Body(...), db: Session = Depe
     return templates.TemplateResponse("in_progress.html", context)
 
 @app.post("/mark_complete", response_class=HTMLResponse)
-def mark_complete(request: Request, item_ids: List[int] = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    for item_id in item_ids:
-        todo = update_todo(db, item_id, completed=True)
+def mark_complete(request: Request, item_ids: List[int] = Body(...), time_spent: List[float] = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    for item_id, time in zip(item_ids, time_spent):
+        todo = update_todo(db, item_id, time_spent=time, completed_bool=True)
     context = {"request": request, "item": todo}
     return templates.TemplateResponse("completed.html", context)
 

@@ -1,13 +1,19 @@
 
+
+
 <table id="completed-table" class="table-fixed w-full">
     <thead>
         <tr>
             <th class="w-1/12 text-center border-4 border-gray-200">
                 <button id="select-all-completed" style="font-size: 0.75em;" title="Select all">✔️</button>
             </th>
-            <th class="w-6/12 text-center border-4 border-gray-200">Task</th> <!-- Increased width -->
-            <th class="w-2/12 border-4 border-gray-200">Client</th> <!-- Decreased width -->
-            <th class="w-2/12 border-4 border-gray-200">Due Date</th> <!-- Decreased width -->
+            <th class="w-5/12 text-center border-4 border-gray-200">Task</th>
+            <th class="w-1/12 border-4 border-gray-200">Client</th>
+            <th class="w-1/12 border-4 border-gray-200">Client ID</th>
+            <th class="w-1/12 border-4 border-gray-200">Matter ID</th>
+            <th class="w-1/12 border-4 border-gray-200">Due Date</th>
+            <th class="w-1/12 border-4 border-gray-200">Date Completed</th>
+            <th class="w-1/12 border-4 border-gray-200">Time Spent</th>
         </tr>
     </thead>
     <tbody>
@@ -16,17 +22,31 @@
             <td class="w-1/12 text-center border-4 border-gray-200">
                 <input class="todo-checkbox" type="checkbox" id="todo-{{ item.id }}" value="{{ item.id }}">
             </td>
-            <td class="w-6/12 border-4 border-gray-200"> <!-- Increased width -->
-                <label for="todo-{{ item.id }}">&nbsp&nbsp&nbsp{{ item.content }}</label>
+            <td class="w-5/12 border-4 border-gray-200">
+                <label for="todo-{{ item.id }}">&nbsp&nbsp&nbsp{{ item.tasks }}</label>
             </td>
-            <td class="w-2/12 text-center border-4 border-gray-200"> <!-- Decreased width -->
-                <label for="client-{{ item.id }}">{{ item.client }}</label> <!-- Client data inserted here -->
+            <td class="w-1/12 text-center border-4 border-gray-200">
+                <label for="client-{{ item.id }}">{{ item.client }}</label>
             </td>
-            <td class="w-2/12 text-center border-4 border-gray-200"> <!-- Decreased width -->
-                <label for="date-{{ item.id }}">{{ item.date }}</label> <!-- Due date data inserted here -->
+            <td class="w-1/12 text-center border-4 border-gray-200">
+                <label for="client_id-{{ item.id }}">{{ item.client_id }}</label>
+            </td>
+            <td class="w-1/12 text-center border-4 border-gray-200">
+                <label for="matter_id-{{ item.id }}">{{ item.matter_id }}</label>
+            </td>
+            <td class="w-1/12 text-center border-4 border-gray-200">
+                <label for="due_date-{{ item.id }}">{{ item.due_date }}</label>
+            </td>
+            <td class="w-1/12 text-center border-4 border-gray-200">
+                <label for="date_completed-{{ item.id }}">{{ item.date_completed }}</label>
+            </td>
+            <td class="w-1/12 text-center border-4 border-gray-200">
+                <label for="time_spent-{{ item.id }}">{{ item.time_spent }}</label>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+
 

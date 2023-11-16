@@ -1,0 +1,14 @@
+{% for todo in items %}
+    <tr>
+        <td class="py-3 px-6 text-left">
+            <div class="font-bold">{{ todo.tasks }}</div>
+            <div class="text-sm">
+                {% if todo.completed %}
+                    Completed
+                {% else %}
+                    Not completed
+                {% endif %}
+            </div>
+        </td>
+    </tr>
+{% endfor %}
