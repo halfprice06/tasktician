@@ -30,74 +30,74 @@
             </nav>
         </div>
     </header>
-    <div id="NewTasksContainer" class="container mx-auto p-2 max-w-8xl flex-grow overflow-x-auto">
-        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 1000px;">
-            <h1 class="text-2xl font-bold mb-6 text-center text-blue-500">Add New Tasks</h1>            
-            <form hx-post="/add/" hx-target="#todo-list" hx-swap="innerHTML" class="mb-4">
-                <div class="flex mb-4">
-                    <div class="w-6/12">
-                        <label for="tasks" class="block text-center font-bold">Task</label>
-                        <input type="text" id="tasks" name="tasks" placeholder="Add a new to-do item" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-1/12">
-                        <label for="client" class="block text-center font-bold">Client Name</label>
-                        <input type="text" id="client" name="client" placeholder="" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-1/12">
-                        <label for="client_id" class="block text-center font-bold">Client ID</label>
-                        <input type="number" id="client_id" name="client_id" placeholder="" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-1/12">
-                        <label for="matter_id" class="block text-center font-bold">Matter ID</label>
-                        <input type="number" id="matter_id" name="matter_id" placeholder="" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-1/12">
-                        <label for="due_date" class="block text-center font-bold">Due Date</label>
-                        <input type="date" id="due_date" name="due_date" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-1/12">
-                        <label for="date_completed" class="block text-center font-bold">Completed</label>
-                        <input type="date" id="date_completed" name="date_completed" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-1/12">
-                        <label for="time_spent" class="block text-center font-bold">Time Spent</label>
-                        <input type="text" id="time_spent" name="time_spent" placeholder="" pattern="^\d*(\.\d{0,2})?$" class="border p-2 mr-2 w-full">
-                    </div>
-                </div>
-                <div class="flex justify-center">
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Add Task
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div id="InProgressTasks" class="container mx-auto p-2 max-w-8xl flex-grow overflow-x-auto">
-        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 1000px;">
+    <div id="InProgressTasks" class="container mx-auto p-2 max-w-8xl overflow-x-auto">
+        <div class="bg-white shadow-md rounded px-8 pt-2 pb-2 mb-2" style="min-width: 1000px;">
             <h1 class="text-2xl font-bold mb-6 text-center text-blue-500">In Progress</h1>
+
 
             <div id="todo-list" hx-get="/get_all_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Existing to-do items will be loaded here -->
             </div>
+            <form hx-post="/add" hx-target="#todo-list" hx-swap="innerHTML" class="mt-4 mb-4">
+
+                <div class="flex mb-4">
+
+                    <div class="w-6/12">
+                        <input type="text" id="tasks" name="tasks" placeholder="Add a new to-do item" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="text" id="client" name="client" placeholder="" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="number" id="client_id" name="client_id" placeholder="" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="number" id="matter_id" name="matter_id" placeholder="" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="date" id="due_date" name="due_date" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="date" id="date_completed" name="date_completed" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="text" id="time_spent" name="time_spent" placeholder="" pattern="^\d*(\.\d{0,2})?$" class="border p-2 mr-2 w-full">
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <button type="submit" class=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
+                        New Task
+                    </button>
+                    <style>
+                        #auto-subtask-btn {
+                            transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, rotate 0.3s ease-in-out;
+                        }
+                        #auto-subtask-btn:hover {
+                            transform: scale(1.2) rotate(10deg);
+                            background-color: purple;
+                        }
+                    </style>
+                    
+                    <button type="button" id="auto-subtask-btn" class="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
+                        Magic Subtask
+                    </button>
+                    
+                    <button type="button" id="mark-complete-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
+                        Mark Complete
+                    </button>
+                    
+                    <button type="button" id="delete-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
+                        Delete
+                    </button>
+                </div>
+            </form>
+
             <div id="loadingMessage" style="display: none;"><br>Loading...<br></div>
-            <div class="flex justify-center">
 
-                <button id="auto-subtask-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
-                    Auto Subtask
-                </button>
-                
-                <button id="mark-complete-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
-                    Mark Complete
-                </button>
-
-                <button id="delete-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
-                    Delete
-                </button>
-            </div>
         </div>
     </div>
-    <div id="CompletedTasks" class="container mx-auto p-2 max-w-8xl flex-grow overflow-x-auto">
-        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" style="min-width: 1000px;">
+    <div id="CompletedTasks" class="container mx-auto p-2 max-w-8xl overflow-x-auto">
+        <div class="bg-white shadow-md rounded px-8 pt-2 pb-2 mb-2" style="min-width: 1000px;">
             <h1 class="text-2xl font-bold mb-6 text-center text-blue-500">Completed</h1>
             <div id="completed-list" hx-get="/get_all_complete_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Completed items will be loaded here -->
@@ -161,14 +161,22 @@
             let selectedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
             // Map the selected checkboxes to their values
             let selectedValues = selectedCheckboxes.map(checkbox => checkbox.value);
-            
+
+            // Get all time spent fields
+            let timeSpentFields = document.querySelectorAll('.time-spent-field');
+            // Map the time spent fields to their values
+            let changedValues = Array.from(timeSpentFields).map(field => parseFloat(field.textContent));
+
             // Send the selected values to the /mark_complete endpoint
             fetch('/mark_complete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(selectedValues),
+                body: JSON.stringify({
+                    item_ids: selectedValues,
+                    time_spent: changedValues
+                }),
             })
             .then(() => {
                 // Fetch the updated list of todos
@@ -231,6 +239,14 @@
             });
         });
     </script>
+    <!-- <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // your form submission logic here
+            // after form submission logic, clear the form
+            e.target.reset();
+        });
+    </script> -->
 
     <script>
         // Modularize your code

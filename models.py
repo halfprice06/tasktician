@@ -85,11 +85,11 @@ def create_todo(db: Session, tasks: str, user_id: int, client: str, client_id: i
 def get_todo(db: Session, item_id: int):
     return db.query(ToDo).filter(ToDo.id == item_id).first()
 
-def update_todo(db: Session, item_id: int, time_spent: float = 0.0, completed_bool: bool = False):
+def update_todo(db: Session, item_id: int, time_spent: float = None, completed_bool: bool = False):
     todo = get_todo(db, item_id)
     todo.completed_bool = completed_bool
     todo.date_completed = datetime.today()
-    todo.time_spent = time_spent
+    todo.time_spent = time_spent if time_spent is not None else 0.0
     db.commit()
     db.refresh(todo)
     return todo

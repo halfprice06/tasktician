@@ -15,7 +15,6 @@
             <th class="w-1/12 border-4 border-gray-200">Time Spent</th>
         </tr>
     </thead>
-    <tbody>
         {% for item in items %}
         <tr class="border-b border-gray-200 bg-gray-100 border-4 border-gray-300">
             <td class="w-1/12 text-center border-4 border-gray-200">
@@ -25,40 +24,24 @@
                 <label for="todo-{{ item.id }}">&nbsp&nbsp&nbsp{{ item.tasks }}</label>
             </td>
             <td class="w-1/12 text-center border-4 border-gray-200">
-                <label for="client-{{ item.id }}">{{ item.client }}</label>
+                <label for="client-{{ item.id }}">{{ item.client|default('') }}</label>
             </td>
             <td class="w-1/12 text-center border-4 border-gray-200">
-                <label for="client_id-{{ item.id }}">{{ item.client_id }}</label>
+                <label for="client_id-{{ item.id }}">{{ item.client_id|default('') }}</label>
             </td>
             <td class="w-1/12 text-center border-4 border-gray-200">
-                <label for="matter_id-{{ item.id }}">{{ item.matter_id }}</label>
+                <label for="matter_id-{{ item.id }}">{{ item.matter_id|default('') }}</label>
             </td>
             <td class="w-1/12 text-center border-4 border-gray-200">
-                <label for="due_date-{{ item.id }}">{{ item.due_date }}</label>
+                <label for="due_date-{{ item.id }}">{{ item.due_date|default('') }}</label>
             </td>
             <td class="w-1/12 text-center border-4 border-gray-200">
                 <label for="date_completed-{{ item.id }}">{{ item.date_completed }}</label>
             </td>
             <td class="w-1/12 text-center border-4 border-gray-200">
-                <label for="time_spent-{{ item.id }}" class="bg-yellow-200 border border-yellow-500 p-2" contenteditable>{{ item.time_spent }}</label>
-            </td>
+                <label for="time_spent-{{ item.id }}" class="bg-yellow-200 border border-yellow-500 time-spent-field" contenteditable>{{ item.time_spent }}</label>            </td>
         </tr>
         {% endfor %}
+        <tbody>
     </tbody>
 </table>
-
-<script>
-    // Get all the label elements that are contenteditable
-    var labelElements = document.querySelectorAll('label[contenteditable]');
-
-    // Add an event listener to each label
-    labelElements.forEach(function(labelElement) {
-        labelElement.addEventListener('input', function() {
-            // Get the edited content
-            var editedContent = this.textContent;
-
-            // Print the edited content
-            console.log(editedContent);
-        });
-    });
-</script>

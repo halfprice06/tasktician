@@ -135,6 +135,7 @@ def add_todo(request: Request,
              db: Session = Depends(get_db), 
              current_user: User = Depends(get_current_user)):
     client = client if client != "" else None  # If client is an empty string, put null into db
+    print("test" + tasks, client, client_id, matter_id, due_date, date_completed, time_spent, completed_bool, parent_id)
     create_todo(db, tasks=tasks, user_id=current_user.id, client=client, client_id=client_id, matter_id=matter_id, due_date=due_date, date_completed=date_completed, time_spent=time_spent, completed_bool=completed_bool, parent_id=parent_id)
     todos = models.get_todos(db, current_user.id)  # Get all todos
     context = {"request": request, "items": todos}  # Change "item" to "items"
@@ -175,7 +176,10 @@ def delete(request: Request, item_ids: List[int] = Body(...), db: Session = Depe
     return templates.TemplateResponse("in_progress.html", context)
 
 @app.post("/mark_complete", response_class=HTMLResponse)
-def mark_complete(request: Request, item_ids: List[int] = Body(...), time_spent: List[float] = Body(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def mark_complete(request: Request, item_ids: List[int] = Body(...), time_spent: List[Optional[float]] = Body(default=None), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    print(f"Item IDs: {item_ids}")  # Print the item IDs
+    print(f"Time spent: {time_spent}")  # Print the time spent
+    
     for item_id, time in zip(item_ids, time_spent):
         todo = update_todo(db, item_id, time_spent=time, completed_bool=True)
     context = {"request": request, "item": todo}
