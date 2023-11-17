@@ -164,8 +164,12 @@
 
             // Get all time spent fields
             let timeSpentFields = document.querySelectorAll('.time-spent-field');
-            // Map the time spent fields to their values
-            let changedValues = Array.from(timeSpentFields).map(field => parseFloat(field.textContent));
+            // Get the values of the selected checkboxes
+            let selectedCheckboxValues = selectedCheckboxes.map(checkbox => checkbox.value);
+            // Filter out the time spent fields that correspond to the selected checkboxes
+            let selectedTimeSpentFields = Array.from(timeSpentFields).filter((field, index) => selectedCheckboxValues.includes(checkboxes[index].value));
+            // Map the selected time spent fields to their values
+            let changedValues = selectedTimeSpentFields.map(field => parseFloat(field.textContent));
 
             // Send the selected values to the /mark_complete endpoint
             fetch('/mark_complete', {
