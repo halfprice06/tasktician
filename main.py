@@ -141,6 +141,25 @@ def add_todo(request: Request,
     context = {"request": request, "items": todos}  # Change "item" to "items"
     return templates.TemplateResponse("in_progress.html", context)
 
+@app.post("/add_new_completed", response_class=HTMLResponse)
+def add_new_completed(request: Request, 
+                      tasks: str = Form(...), 
+                      client: str = Form(None), 
+                      client_id: int = Form(None),
+                      matter_id: int = Form(None),
+                      due_date: date = Form(None),
+                      date_completed: date = Form(None),
+                      time_spent: float = Form(None),
+                      parent_id: int = Form(None),
+                      db: Session = Depends(get_db), 
+                      current_user: User = Depends(get_current_user)):
+    client = client if client != "" else None  # If client is an empty string, put null into db
+    print("test" + tasks, client, client_id, matter_id, due_date, date_completed, time_spent, True, parent_id)
+    create_todo(db, tasks=tasks, user_id=current_user.id, client=client, client_id=client_id, matter_id=matter_id, due_date=due_date, date_completed=date_completed, time_spent=time_spent, completed_bool=True, parent_id=parent_id)
+    todos = models.get_todos(db, current_user.id)  # Get all todos
+    context = {"request": request, "items": todos}  # Change "item" to "items"
+    return templates.TemplateResponse("completed.html", context)
+
 @app.get("/get_all_todos", response_class=HTMLResponse)
 def get_all_todos(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     todos = models.get_todos(db, current_user.id)

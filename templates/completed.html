@@ -1,6 +1,3 @@
-
-
-
 <table id="completed-table" class="table-fixed w-full">
     <thead>
         <tr>
@@ -8,45 +5,41 @@
                 <button id="select-all-completed" style="font-size: 0.75em;" title="Select all">✔️</button>
             </th>
             <th class="w-5/12 text-center border-4 border-gray-200">Task</th>
-            <th class="w-1/12 border-4 border-gray-200">Client</th>
+            <th class="w-2/12 border-4 border-gray-200">Client</th>
             <th class="w-1/12 border-4 border-gray-200">Client ID</th>
             <th class="w-1/12 border-4 border-gray-200">Matter ID</th>
-            <th class="w-1/12 border-4 border-gray-200">Due Date</th>
             <th class="w-1/12 border-4 border-gray-200">Date Completed</th>
             <th class="w-1/12 border-4 border-gray-200">Time Spent</th>
         </tr>
-    </thead>
-    <tbody>
+    </thead>    
+    <tbody class="flex-table">
         {% for item in items %}
         <tr class="border-b border-gray-200 bg-gray-100 border-4 border-gray-300">
-            <td class="w-1/12 text-center border-4 border-gray-200">
+            <td class="text-center border-4 border-gray-200">
                 <input class="todo-checkbox" type="checkbox" id="todo-{{ item.id }}" value="{{ item.id }}">
             </td>
-            <td class="w-5/12 border-4 border-gray-200">
+            <td class="border-4 border-gray-200">
                 <label for="todo-{{ item.id }}">&nbsp&nbsp&nbsp{{ item.tasks }}</label>
             </td>
-            <td class="w-1/12 text-center border-4 border-gray-200">
+            <td class="text-center border-4 border-gray-200">
                 <label for="client-{{ item.id }}">{{ item.client }}</label>
             </td>
-            <td class="w-1/12 text-center border-4 border-gray-200">
+            <td class="text-center border-4 border-gray-200">
                 <label for="client_id-{{ item.id }}">{{ item.client_id }}</label>
             </td>
-            <td class="w-1/12 text-center border-4 border-gray-200">
+            <td class="text-center border-4 border-gray-200">
                 <label for="matter_id-{{ item.id }}">{{ item.matter_id }}</label>
             </td>
-            <td class="w-1/12 text-center border-4 border-gray-200">
-                <label for="due_date-{{ item.id }}">{{ item.due_date }}</label>
-            </td>
-            <td class="w-1/12 text-center border-4 border-gray-200">
+            <td class="text-center border-4 border-gray-200">
                 <label for="date_completed-{{ item.id }}">{{ item.date_completed }}</label>
             </td>
-            <td class="w-1/12 text-center border-4 border-gray-200">
+            <td class="text-center border-4 border-gray-200">
                 <label for="time_spent-{{ item.id }}">{{ item.time_spent }}</label>
             </td>
         </tr>
         {% endfor %}
     </tbody>
-</table>
+    </table>
 
 
 

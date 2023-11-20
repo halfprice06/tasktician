@@ -19,7 +19,7 @@
             <a href="/home" class="font-bold text-2xl text-white mb-2 md:mb-0">
                 <i class="fas fa-tasks pr-2 "></i>Tasktician
             </a>
-            <div class="font-bold text-xl text-white mb-2 md:mb-0">Welcome {{ username }}!</div>
+            <div class="font-bold text-xl text-white mb-2 md:mb-0">Welcome to Tasktician's Attorney Mode {{ username }}!</div>
             <nav>
                 <ul class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4 items-center">
                     <li><button hx-get="/toggle-microphone" hx-swap="innerHTML" hx-trigger="click" class="text-white hover:text-blue-500 font-bold py-2 px-4 rounded">
@@ -38,15 +38,21 @@
             <div id="todo-list" hx-get="/get_all_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Existing to-do items will be loaded here -->
             </div>
-            <form hx-post="/add" hx-target="#todo-list" hx-swap="innerHTML" class="mt-4 mb-4">
+            <form hx-post="/add" hx-target="#todo-list" hx-swap="innerHTML" class="mt-1 mb-1">
 
                 <div class="flex mb-4">
-
+                    <div class="w-1/12" style="visibility: hidden;">
+                        <div class="border p-2 mr-2 w-full"></div>
+                    </div>
                     <div class="w-6/12">
                         <input type="text" id="tasks" name="tasks" placeholder="Add a new to-do item" class="border p-2 mr-2 w-full">
                     </div>
-                    <div class="w-1/12">
-                        <input type="text" id="client" name="client" placeholder="" class="border p-2 mr-2 w-full">
+                    <div class="w-2/12">
+                        <select id="client" name="client" class="border p-2 mr-2 w-full">
+                            <option value="Client 1">Client 1</option>
+                            <option value="Client 2">Client 2</option>
+                            <option value="Client 3">Client 3</option>
+                        </select>
                     </div>
                     <div class="w-1/12">
                         <input type="number" id="client_id" name="client_id" placeholder="" class="border p-2 mr-2 w-full">
@@ -56,12 +62,6 @@
                     </div>
                     <div class="w-1/12">
                         <input type="date" id="due_date" name="due_date" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-1/12">
-                        <input type="date" id="date_completed" name="date_completed" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-1/12">
-                        <input type="text" id="time_spent" name="time_spent" placeholder="" pattern="^\d*(\.\d{0,2})?$" class="border p-2 mr-2 w-full">
                     </div>
                 </div>
                 <div class="flex justify-center">
@@ -99,18 +99,49 @@
     <div id="CompletedTasks" class="container mx-auto p-2 max-w-8xl overflow-x-auto">
         <div class="bg-white shadow-md rounded px-8 pt-2 pb-2 mb-2" style="min-width: 1000px;">
             <h1 class="text-2xl font-bold mb-6 text-center text-blue-500">Completed</h1>
+
+
             <div id="completed-list" hx-get="/get_all_complete_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Completed items will be loaded here -->
             </div>
-            <div class="flex justify-center">
-
-                <button id="submit-juris-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
-                    Submit to Juris
-                </button>
-                <button id="delete-completed-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
-                    Delete
-                </button>
-            </div>
+            <form hx-post="/add_new_completed" hx-target="#completed-list" hx-swap="innerHTML" class="mb-1 mt-1">
+                <div class="flex mb-2">
+                    <div class="w-1/12" style="visibility: hidden;">
+                        <div class="border p-2 mr-2 w-full"></div>
+                    </div>
+                    <div class="w-5/12">
+                        <input type="text" id="tasks" name="tasks" placeholder="Add a new completed task" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-2/12">
+                        <input type="text" id="client" name="client" placeholder="" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="number" id="client_id" name="client_id" placeholder="" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="number" id="matter_id" name="matter_id" placeholder="" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="date" id="date_completed" name="date_completed" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="text" id="time_spent" name="time_spent" placeholder="" pattern="^\d*(\.\d{0,2})?$" class="border p-2 mr-2 w-full">
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <button type="submit" id="add-new-completed-btn" class="flex justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
+                            Add New Completed
+                    </button>
+                </div>                
+            </form>
+                <div class="flex justify-center">
+                    <button id="submit-juris-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
+                        Export to CSV
+                    </button>
+                    <button id="delete-completed-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 mb-6 mx-2">
+                        Delete
+                    </button>
+                </div>
         </div>
     </div>
     <footer class="bg-white text-gray-800 p-4">
