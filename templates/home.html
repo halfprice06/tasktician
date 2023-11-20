@@ -38,30 +38,32 @@
             <div id="todo-list" hx-get="/get_all_todos" hx-swap="innerHTML" hx-trigger="load">
                 <!-- Existing to-do items will be loaded here -->
             </div>
-            <form hx-post="/add" hx-target="#todo-list" hx-swap="innerHTML" class="mt-1 mb-1">
+            <form hx-post="/add" hx-target="#todo-list" hx-swap="innerHTML" class="mt-4 mb-4">
 
                 <div class="flex mb-4">
                     <div class="w-1/12" style="visibility: hidden;">
                         <div class="border p-2 mr-2 w-full"></div>
                     </div>
                     <div class="w-6/12">
-                        <input type="text" id="tasks" name="tasks" placeholder="Add a new to-do item" class="border p-2 mr-2 w-full">
-                    </div>
-                    <div class="w-2/12">
-                        <select id="client" name="client" class="border p-2 mr-2 w-full">
-                            <option value="Client 1">Client 1</option>
-                            <option value="Client 2">Client 2</option>
-                            <option value="Client 3">Client 3</option>
-                        </select>
+                        <input type="text" id="tasks" name="tasks" placeholder="Add a new to-do item" class="border-2 p-2 mr-2 w-full text-center">
                     </div>
                     <div class="w-1/12">
-                        <input type="number" id="client_id" name="client_id" placeholder="" class="border p-2 mr-2 w-full">
+                        <input type="text" id="client" name="client" placeholder="" class="border p-2 mr-2 w-full">
                     </div>
                     <div class="w-1/12">
-                        <input type="number" id="matter_id" name="matter_id" placeholder="" class="border p-2 mr-2 w-full">
+                        <input type="number" id="client_id" name="client_id" placeholder="" class="border-2 p-2 mr-2 w-full">
                     </div>
                     <div class="w-1/12">
-                        <input type="date" id="due_date" name="due_date" class="border p-2 mr-2 w-full">
+                        <input type="number" id="matter_id" name="matter_id" placeholder="" class="border-2 p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="date" id="due_date" name="due_date" class="border-2 mr-2 p-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="date" id="date_completed" name="date_completed" class="border p-2 mr-2 w-full">
+                    </div>
+                    <div class="w-1/12">
+                        <input type="text" id="time_spent" name="time_spent" placeholder="" pattern="^\d*(\.\d{0,2})?$" class="border p-2 mr-2 w-full">
                     </div>
                 </div>
                 <div class="flex justify-center">
@@ -195,8 +197,12 @@
 
             // Get all time spent fields
             let timeSpentFields = document.querySelectorAll('.time-spent-field');
-            // Map the time spent fields to their values
-            let changedValues = Array.from(timeSpentFields).map(field => parseFloat(field.textContent));
+            // Get the values of the selected checkboxes
+            let selectedCheckboxValues = selectedCheckboxes.map(checkbox => checkbox.value);
+            // Filter out the time spent fields that correspond to the selected checkboxes
+            let selectedTimeSpentFields = Array.from(timeSpentFields).filter((field, index) => selectedCheckboxValues.includes(checkboxes[index].value));
+            // Map the selected time spent fields to their values
+            let changedValues = selectedTimeSpentFields.map(field => parseFloat(field.textContent));
 
             // Send the selected values to the /mark_complete endpoint
             fetch('/mark_complete', {
